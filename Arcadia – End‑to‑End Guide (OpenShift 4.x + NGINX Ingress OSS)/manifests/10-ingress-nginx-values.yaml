@@ -1,35 +1,18 @@
-# manifests/ingress-nginx-values.yaml
-# Wersja sprawdzona na OpenShift (OSS ingress-nginx 4.13.0 / controller 1.13.0)
-# Kluczowe decyzje:
-# - Wyłączone admission webhooki (unika hook Job + SCC problemów)
-# - Brak runAsUser/runAsGroup => OCP przypisze dynamiczny UID z puli projektu
-# - allowPrivilegeEscalation=false
-# - watchNamespace="" (obserwuje wszystkie NS; można zawęzić później)
-
 controller:
   service:
     type: ClusterIP
-
   ingressClass: nginx
   ingressClassResource:
     name: nginx
     enabled: true
-    # default: false (nie ustawiamy jako globalny default)
-
-  watchNamespace: ""        # Po stabilizacji można ustawić: arcadia
-
+  watchNamespace: ""
   admissionWebhooks:
     enabled: false
     patch:
       enabled: false
-
   containerSecurityContext:
     runAsUser: null
     runAsGroup: null
     allowPrivilegeEscalation: false
     runAsNonRoot: true
-    # readOnlyRootFilesystem można włączyć po weryfikacji obrazu:
-    # readOnlyRootFilesystem: true
-
-  # (opcjonalnie konfiguracja NGINX – puste)
   config: {}
