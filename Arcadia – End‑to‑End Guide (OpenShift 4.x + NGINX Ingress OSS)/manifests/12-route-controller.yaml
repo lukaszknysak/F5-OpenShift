@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: nginx-ingress
+  namespace: ingress-nginx
+spec:
+  host: arcadia.apps.netoro.lab
+  to:
+    kind: Service
+    name: arcadia-ing-ingress-nginx-controller
+  port:
+    targetPort: http
+  wildcardPolicy: None
