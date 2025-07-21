@@ -181,22 +181,32 @@ Expect SCC=anyuid and `uid=0(root)`.
 ## 11. Step E – Install NGINX Ingress Controller (Working Variant)
 We use Helm chart `ingress-nginx` with a tailored values file to avoid admission webhook Jobs (which can fail under restrictive SCC) and allow OpenShift to inject a dynamic UID (we explicitly null `runAsUser` / `runAsGroup`).
 
-**Values file:** `manifests/10-ingress-nginx-values.yaml` (see Appendix for full content)
-
 **Install:**
 ```bash
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-helm repo update
 helm upgrade --install arcadia-ing ingress-nginx/ingress-nginx \
   --version 4.13.0 \
   -n ingress-nginx --create-namespace \
-  -f manifests/10-ingress-nginx-values.yaml \
+  --set controller.service.type=ClusterIP \
+  --set controller.ingressClass=nginx \
+  --set controller.ingressClassResource.name=nginx \
+  --set controller.admissionWebhooks.enabled=false \
+  --set controller.admissionWebhooks.patch.enabled=false \
+  --set controller.watchNamespace="" \
+  --set controller.containerSecurityContext.runAsUser=null \
+  --set controller.containerSecurityContext.runAsGroup=null \
+  --set controller.containerSecurityContext.allowPrivilegeEscalation=false \
   --timeout 5m --debug
 ```
 **Why these flags:**
 * `--install` handles first deploy and subsequent upgrades idempotently.
 * `--timeout 5m` prevents indefinite hang if an image pull or webhook stalls.
 * Disabling admission webhooks removes extra Jobs that would require additional SCC tuning.
+
+**Your pods will crash - Apply `anyuid` SCC (Quick Lab Fix)**
+```bash
+oc adm policy add-scc-to-user anyuid -z arcadia-ing-ingress-nginx -n ingress-nginx
+oc rollout restart deploy/arcadia-ing-ingress-nginx-controller -n ingress-nginx
+```
 
 **Check:**
 ```bash
