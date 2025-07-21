@@ -1,6 +1,6 @@
 # Arcadia – End‑to‑End Guide (OpenShift 4.x + NGINX Ingress OSS)
 
-> **Purpose:** A *fully reproducible*, deeply explained walkthrough to deploy the sample **Arcadia** micro‑application (four services: `main`, `backend`, `app2`, `app3`) on an **OpenShift 4.x** cluster and expose it via the **NGINX Ingress Controller (open source)** fronted by an OpenShift *Route*. The document is intentionally verbose and pedagogical: **every step answers “WHAT are we doing?” and “WHY are we doing it?”** so that a newcomer can follow, while remaining technically precise for advanced users.
+> **Purpose:** A *fully reproducible*, deeply explained walkthrough to deploy the sample **Arcadia** micro‑application (four services: `main`, `backend`, `app2`, `app3`) on an **OpenShift 4.x** cluster and expose it via the **NGINX Ingress Controller (open source)** fronted by an OpenShift *Route*.
 >
 > We keep the original upstream container images which listen on privileged TCP port **80** to show real‑world constraints (privileged port binding, Security Context Constraints, etc.). We show how to make them run quickly (granting the `anyuid` SCC) and outline the production‑grade alternative (rebuild for non‑root / high ports, capabilities, or setcap). TLS variants, troubleshooting matrix, hardening roadmap, and cleanup are included.
 
