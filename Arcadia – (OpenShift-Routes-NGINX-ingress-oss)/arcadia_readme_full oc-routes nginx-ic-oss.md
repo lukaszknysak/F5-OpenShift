@@ -275,7 +275,7 @@ curl -kI https://arcadia.apps.netoro.lab/
 ```
 **Why:** Offloads TLS from NGINX; simpler cert rotation (central place). `--insecure-policy=Redirect` forces HTTP→HTTPS upgrade.
 
-### 15.2 TLS Termination Inside NGINX (Ingress Spec)
+### 15.2 (OPTIONALLY when not using 15.1) TLS Termination Inside NGINX (Ingress Spec)
 **When:** Need fine‑grained TLS tuning, mTLS, per‑Ingress certificates.
 1. Create secret in the *application* namespace:
 ```bash
