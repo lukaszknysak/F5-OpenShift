@@ -32,24 +32,24 @@ Rather than one monster guide we keep **one folder = one scenario** so you can
 6. **Helm v3** – only for scenarios 4‑9 (installs NGINX Ingress).  `curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash`
 7. **SSH key** – push to GitHub without passwords.  `ssh-keygen -t ed25519 -C "you@example.com"`
 
-### 2.2. Get **kubeconfig** once
+### 2.2. Get **kubeconfig** once
 
 *OpenShift Web Console → **?** → Copy Login Command*  → paste the `oc login --token ...` line in your terminal. Credentials are saved to `~/.kube/config`; both `oc` and VS Code will pick them up.
 
-### 2.3. Cluster requirements
+### 2.3. Cluster requirements
 
 * **OpenShift 4.10+** (tested on 4.14).  You need a user allowed to _create namespaces_ and _grant SCCs_.
 * Nodes must reach **Docker Hub** (to pull `bkimminich/juice-shop`).
 * For Route‑based labs: wildcard DNS `*.apps.<cluster‑base>` → router VIP (or edit `/etc/hosts`).
 
-### 2.4. Optional BIG‑IP (rows 7‑11)
+### 2.4. Optional BIG‑IP (rows 7‑11)
 * **TMOS 17.1/17.5 VE** with LTM + DNS modules.
 * **F5 CIS 2.13+**, **IngressLink 2.10+**, **NGINX Plus IC R30+** (if you explore WAF).
 * Simple **static routes** between BIG‑IP and the cluster are enough for single‑box demos.
 
 ---
 
-## 3.  Mini‑Glossary (the *why* behind every tool)
+## 3.  Mini‑Glossary (the *why* behind every tool)
 * **Git vs GitHub** – Git stores version history on your disk; GitHub is the cloud where you _push_ commits so team‑mates (or CI) can _pull_ & merge.
 * **VS Code** – shows YAML schema errors in red _before_ `oc apply` fails; the OpenShift Toolkit lets you browse pods & logs without leaving the editor.
 * **OpenShift CLI `oc`** – superset of `kubectl` with extra verbs like `oc adm policy` or `oc create route`.  Authenticate once, then scripts just work.
@@ -58,7 +58,7 @@ Rather than one monster guide we keep **one folder = one scenario** so you can
 
 ---
 
-## 4  Repository Layout Blueprint
+## 4.  Repository Layout Blueprint
 ```text
 juice-shop-labs/
 ├── 00-clusterip-internal/   # Scenario 0 – ClusterIP only
@@ -80,7 +80,7 @@ Numeric prefixes match the matrix rows – easy cross‑reference on stream.
 
 ---
 
-## 5  Deployment‑Option Matrix (_pick your adventure_)
+## 5.  Deployment‑Option Matrix (_pick your adventure_)
 
 | #  | Scenario & Folder                                                | Front‑to‑Back Path                  | In‑Cluster Controller(s) | External LB / ADC | TLS Termination | HTTPS Redirect    | GSLB / Fail‑over     | Connectivity to OCP | Ops Owner              | Primary Purpose        |
 | -- | ---------------------------------------------------------------- | ----------------------------------- | ------------------------ | ----------------- | --------------- | ----------------- | -------------------- | ------------------- | ---------------------- | ---------------------- |
@@ -116,7 +116,7 @@ Numeric prefixes match the matrix rows – easy cross‑reference on stream.
 
 ---
 
-## 6  Next Step
+## 6. Next Step
 *Clone the repo, pick a folder, follow its README.  Chapters A & B below are the first two folders already embedded here for quick copy‑paste.*
 
 ---
