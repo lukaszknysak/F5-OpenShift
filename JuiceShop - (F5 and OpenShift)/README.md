@@ -6,7 +6,7 @@
 
 ---
 
-## Why many scenarios?
+## 1. Why many scenarios?
 Juice Shop is stateless, single‑container and instantly recognisable - a perfect app for testing environments like this.  Real production apps are exposed in many ways:
 
 * **ClusterIP** for east‑west traffic inside the mesh
@@ -19,7 +19,7 @@ Rather than one monster guide we keep **one folder = one scenario** so you can
 
 ---
 
-## 2  Quick‑Start Checklist _(no tables – copy/paste friendly)_
+## 2.  Quick‑Start Checklist _(no tables – copy/paste friendly)_
 
 ### 2.1 Tools on your **Ubuntu workstation** (or macOS/WSL)
 1. **Git CLI (or Github Desktop)** – local commits & branching.  `sudo apt install git`
