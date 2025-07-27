@@ -22,6 +22,8 @@ Rather than one monster guide we keep **one folder = one scenario** so you can
 
 ## 2. Quick‑Start Checklist
 
+### 2.1. Tools on your **Ubuntu workstation** (or macOS/WSL)
+
 ### 2.1. Tools on your **Ubuntu workstation** (or macOS/WSL)
 1. **Git CLI (or Github Desktop)** – local commits & branching.  `sudo apt install git`
 2. **GitHub account** – remote repo for sharing/pull‑requests.  Sign up on github.com.
