@@ -19,9 +19,10 @@ Rather than one monster guide we keep **one folder = one scenario** so you can
 
 ---
 
-## 2.  Quick‑Start Checklist _(no tables – copy/paste friendly)_
 
-### 2.1 Tools on your **Ubuntu workstation** (or macOS/WSL)
+## 2. Quick‑Start Checklist
+
+### 2.1. Tools on your **Ubuntu workstation** (or macOS/WSL)
 1. **Git CLI (or Github Desktop)** – local commits & branching.  `sudo apt install git`
 2. **GitHub account** – remote repo for sharing/pull‑requests.  Sign up on github.com.
 3. **VS Code** – YAML editing & cluster browsing.  Download, then add extensions like  _YAML_ & _Red Hat OpenShift Toolkit_.
@@ -30,22 +31,22 @@ Rather than one monster guide we keep **one folder = one scenario** so you can
 6. **Helm v3** – only for scenarios 4‑9 (installs NGINX Ingress).  `curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash`
 7. **SSH key** – push to GitHub without passwords.  `ssh-keygen -t ed25519 -C "you@example.com"`
 
-### 2.2 Get **kubeconfig** once
+### 2.2. Get **kubeconfig** once
 *OpenShift Web Console → **?** → Copy Login Command*  → paste the `oc login --token ...` line in your terminal. Credentials are saved to `~/.kube/config`; both `oc` and VS Code will pick them up.
 
-### 2.3 Cluster requirements
+### 2.3. Cluster requirements
 * **OpenShift 4.10+** (tested on 4.14).  You need a user allowed to _create namespaces_ and _grant SCCs_.
 * Nodes must reach **Docker Hub** (to pull `bkimminich/juice-shop`).
 * For Route‑based labs: wildcard DNS `*.apps.<cluster‑base>` → router VIP (or edit `/etc/hosts`).
 
-### 2.4 Optional BIG‑IP (rows 7‑11)
+### 2.4. Optional BIG‑IP (rows 7‑11)
 * **TMOS 17.1/17.5 VE** with LTM + DNS modules.
 * **F5 CIS 2.13+**, **IngressLink 2.10+**, **NGINX Plus IC R30+** (if you explore WAF).
 * Simple **static routes** between BIG‑IP and the cluster are enough for single‑box demos.
 
 ---
 
-## 3  Mini‑Glossary (the *why* behind every tool)
+## 3.  Mini‑Glossary (the *why* behind every tool)
 * **Git vs GitHub** – Git stores version history on your disk; GitHub is the cloud where you _push_ commits so team‑mates (or CI) can _pull_ & merge.
 * **VS Code** – shows YAML schema errors in red _before_ `oc apply` fails; the OpenShift Toolkit lets you browse pods & logs without leaving the editor.
 * **OpenShift CLI `oc`** – superset of `kubectl` with extra verbs like `oc adm policy` or `oc create route`.  Authenticate once, then scripts just work.
