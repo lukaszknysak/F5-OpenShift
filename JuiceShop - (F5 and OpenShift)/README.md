@@ -6,7 +6,7 @@
 
 ---
 
-## 1  Why many scenarios?
+## Why many scenarios?
 Juice Shop is stateless, single‑container and instantly recognisable - a perfect app for testing environments like this.  Real production apps are exposed in many ways:
 
 * **ClusterIP** for east‑west traffic inside the mesh
