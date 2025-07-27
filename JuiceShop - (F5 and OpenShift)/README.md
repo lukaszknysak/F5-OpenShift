@@ -24,7 +24,6 @@ Rather than one monster guide we keep **one folder = one scenario** so you can
 
 ### 2.1. Tools on your **Ubuntu workstation** (or macOS/WSL)
 
-### 2.1. Tools on your **Ubuntu workstation** (or macOS/WSL)
 1. **Git CLI (or Github Desktop)** – local commits & branching.  `sudo apt install git`
 2. **GitHub account** – remote repo for sharing/pull‑requests.  Sign up on github.com.
 3. **VS Code** – YAML editing & cluster browsing.  Download, then add extensions like  _YAML_ & _Red Hat OpenShift Toolkit_.
@@ -34,9 +33,11 @@ Rather than one monster guide we keep **one folder = one scenario** so you can
 7. **SSH key** – push to GitHub without passwords.  `ssh-keygen -t ed25519 -C "you@example.com"`
 
 ### 2.2. Get **kubeconfig** once
+
 *OpenShift Web Console → **?** → Copy Login Command*  → paste the `oc login --token ...` line in your terminal. Credentials are saved to `~/.kube/config`; both `oc` and VS Code will pick them up.
 
 ### 2.3. Cluster requirements
+
 * **OpenShift 4.10+** (tested on 4.14).  You need a user allowed to _create namespaces_ and _grant SCCs_.
 * Nodes must reach **Docker Hub** (to pull `bkimminich/juice-shop`).
 * For Route‑based labs: wildcard DNS `*.apps.<cluster‑base>` → router VIP (or edit `/etc/hosts`).
