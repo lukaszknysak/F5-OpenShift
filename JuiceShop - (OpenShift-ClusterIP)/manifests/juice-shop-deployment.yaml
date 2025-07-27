@@ -1,0 +1,29 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: juice-shop
+  labels:
+    app: juice-shop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: juice-shop
+  template:
+    metadata:
+      labels:
+        app: juice-shop
+    spec:
+      serviceAccountName: juice-anyuid      # <<< uses the SA from step 2
+      containers:
+      - name: juice-shop
+        image: bkimminich/juice-shop        # latest stable image
+        ports:
+        - containerPort: 3000               # the app listens here
+        volumeMounts:                       # writable dir for metadata file
+        - name: wellknown
+          mountPath: /.well-known
+      volumes:
+      - name: wellknown
+        emptyDir: {}                        # tmpfs; owned by root in pod
