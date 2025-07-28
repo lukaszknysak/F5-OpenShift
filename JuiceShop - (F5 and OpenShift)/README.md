@@ -1,4 +1,4 @@
-# OWASP Juice Shop Labs on OpenShift 4.x — **Master README: Prerequisites & Scenario Catalog**
+# F5 and OWASP Juice Shop Labs on OpenShift 4.x — **Master README: Prerequisites & Scenario Catalog**
 
 > _Episode 0 – read this once, then dive into any folder._  
 > **Goal:** Explain **what you need** on your workstation / cluster **and where every how‑to lives**.  
