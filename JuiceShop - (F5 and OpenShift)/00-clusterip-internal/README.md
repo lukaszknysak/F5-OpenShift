@@ -23,6 +23,13 @@
 ## 0  Prerequisites recap
 
 - You are **logged in** to the cluster from your Ubuntu workstation: `oc login …` wrote credentials to `~/.kube/config`.
+```bash
+oc login -u kubeadmin -p xxxx-xxxx-xxxx-xxxx --insecure-skip-tls-verify https://api.oc-cluster-01.netoro.lab:6443
+```
+- Use kubeconfig to connect to the cluster (the sample command is below)
+```bash
+export KUBECONFIG=/home/lukasz/oc/kubeconfig.yaml
+```
 - The user has permission to **create projects** and **grant SCCs**.
 - The cluster can pull public images from Docker Hub (`bkimminich/juice-shop`).
 
@@ -38,6 +45,7 @@ oc delete project juice-shop --wait=true || true
 
 # Re‑create an empty namespace for this scenario
 oc new-project juice-shop
+oc project juice-shop
 ```
 
 Result: a brand‑new namespace, free of leftover Deployments or SCC labels.
@@ -147,17 +155,42 @@ The application is now reachable at `http://juice-shop:80` **from any pod in the
 Spin up a temporary curl pod and make an internal request:
 
 ```bash
-oc run tmp --rm -i --tty --image=curlimages/curl --command -- sh -c \
-  'curl -I http://juice-shop/ | head -n1'
+oc run tmp --rm -it --image=curlimages/curl -- sh
+```
+
+Inside the pod manually run the command:
+
+```bash
+~ $ curl -vI http://juice-shop
 ```
 
 Expected output:
 
 ```
+* Host juice-shop:80 was resolved.
+* IPv6: (none)
+* IPv4: 172.30.242.168
+*   Trying 172.30.242.168:80...
+* Connected to juice-shop (172.30.242.168) port 80
+* using HTTP/1.x
+> HEAD / HTTP/1.1
+> Host: juice-shop
+> User-Agent: curl/8.15.0
+> Accept: */*
+>
+< HTTP/1.1 200 OK
 HTTP/1.1 200 OK
+< Access-Control-Allow-Origin: *
+.......
 ```
 
 If you get a timeout or 503, jump to the troubleshooting table below.
+
+Type the command below to exit and terminate the temporary pod:
+
+```bash
+~ $ exit
+```
 
 ---
 
