@@ -3,7 +3,7 @@
 > _Episode 0 – read this once, then dive into any folder._  
 > **Goal:** Explain **what you need** on your workstation / cluster **and where every how‑to lives**.  
 > **Audience:** First‑time OpenShift users with F5 experience who want a reproducible Juice Shop deployment while learning north–south publishing patterns – from bare‑bones **ClusterIP** to **BIG‑IP + Ingress Controller + WAF**.
-
+> **Environment required** OpenShift cluster up and running
 ---
 
 ## 1. Why many scenarios?
@@ -22,15 +22,25 @@ Rather than one monster guide we keep **one folder = one scenario** so you can
 
 ## 2. Quick‑Start Checklist
 
-### 2.1. Tools on your **Ubuntu workstation** (or macOS/WSL)
+### 2.1. Technologies used and tools on your **Ubuntu workstation** (or macOS/WSL)
 
-1. **Git CLI (or Github Desktop)** – local commits & branching.  `sudo apt install git`
-2. **GitHub account** – remote repo for sharing/pull‑requests.  Sign up on github.com.
-3. **VS Code** – YAML editing & cluster browsing.  Download, then add extensions like  _YAML_ & _Red Hat OpenShift Toolkit_.
-4. **OpenShift CLI (`oc`)** – create projects, tail logs.  Download from the OpenShift Web Console → **?** → _Command‑line Tools_.  Put `oc` in `~/bin` or `/usr/local/bin`.
-5. *(Optional)* **kubectl** – some IDE tasks expect it.  Ships in the same tarball as `oc`.
-6. **Helm v3** – only for scenarios 4‑9 (installs NGINX Ingress).  `curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash`
-7. **SSH key** – push to GitHub without passwords.  `ssh-keygen -t ed25519 -C "you@example.com"`
+The technologies used for this environment are shown below.
+
+1. BIGIP - Standalone BIGIP that has the LTM/AWAF/DNS modules provisioned.
+2. NGINX IC - Runs inside the Openshifr/K8s clusters. The installation is done through Helm Charts.
+3. NGINX Plus - The commercial version of NGINX has been deployed on a Virtual Machine and with the use of Nginx-Agent is managed from NIM (or NGINX One Console).
+4. NIM - Nginx Instance Manager installed on a virtual Machine.
+5. CIS - Runs inside the OpenShift/K8s cluster.
+6. OpensShift/K8s Clusters - We have some single nad multinode Kubernetes clusters, that you can access from Ubuntu workstation or VSCode. 
+7. Kubectl - Installed on Ubuntu workstation - In order to access clusters with ease
+8. GitLab - Runs on a dedicated server and provides three main functionalities (Source Code Management, Gitlab Runner (CI/CD), Container registry)
+9. **Git CLI (or Github Desktop)** – local commits & branching.  `sudo apt install git`
+10. **GitHub account** – remote repo for sharing/pull‑requests.  Sign up on github.com.
+11. **VS Code** – YAML editing & cluster browsing.  Download, then add extensions like  _YAML_ & _Red Hat OpenShift Toolkit_.
+12. **OpenShift CLI (`oc`)** – create projects, tail logs.  Download from the OpenShift Web Console → **?** → _Command‑line Tools_.  Put `oc` in `~/bin` or `/usr/local/bin`.
+13. *(Optional)* **kubectl** – some IDE tasks expect it.  Ships in the same tarball as `oc`.
+14. **Helm v3** – only for scenarios 4‑9 (installs NGINX Ingress).  `curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash`
+15. **SSH key** – push to GitHub without passwords.  `ssh-keygen -t ed25519 -C "you@example.com"`
 
 ### 2.2. Get **kubeconfig** once
 
@@ -82,37 +92,20 @@ Numeric prefixes match the matrix rows – easy cross‑reference on stream.
 
 ## 5.  Deployment‑Option Matrix (_pick your adventure_)
 
-| #  | Scenario & Folder                                                | Front‑to‑Back Path                  | In‑Cluster Controller(s) | External LB / ADC | TLS Termination | HTTPS Redirect    | GSLB / Fail‑over     | Connectivity to OCP | Ops Owner              | Primary Purpose        |
-| -- | ---------------------------------------------------------------- | ----------------------------------- | ------------------------ | ----------------- | --------------- | ----------------- | -------------------- | ------------------- | ---------------------- | ---------------------- |
-| 0  | ClusterIP – [`00-clusterip-internal/`](00-clusterip-internal/README.md)                             | Pod → Service (ClusterIP)           | n/a                      | n/a               | None            | Manual            | n/a                  | n/a                 | Dev→Dev                | East‑west / unit tests |
-| 1  | NodePort – [`01-nodeport/`](01-nodeport/README.md)                                        | Pod → Service (NodePort)            | n/a                      | n/a               | None            | Manual            | n/a                  | direct node IP      | Dev                    | Quick PoC              |
-| 2  | ext‑NGINX LB – `02-ext-nginx-nodeport/`                          | NodePort exposed via external NGINX | n/a                      | NGINX             | External NGINX  | Optional          | DNS round‑robin      | n/a                 | NetOps                 | DIY LB between workers |
-| 3  | Route (edge) – `03-route-edge/`                                  | HAProxy Router                      | HAProxy Router           | Router            | Router (edge)   | Yes               | Wildcard DNS         | SDN / OVN           | Dev→DevOps             | Native PROD pattern    |
-| 4  | Route → NGINX OSS IC – `04-route-ic-oss/`                        | Router → Ingress                    | NGINX OSS IC             | Router            | None (HTTP)     | n/a               | ClusterIP svc        | -                   | DevOps                 | Path fan‑out demo      |
-| 5  | Edge TLS → NGINX OSS IC – `05-route-ic-oss-edgeTLS/`             | Router(edge TLS) → IC               | NGINX OSS IC             | Router            | Router (edge)   | Yes               | ClusterIP svc        | -                   | DevOps               | Central cert mgmt & L7 |
-| 6  | Passthrough → NGINX OSS IC – `06-route-ic-oss-icTLS/`            | Router passthrough → IC TLS         | NGINX OSS IC             | Router            | IC              | Optional          | ClusterIP svc        | -                   | DevOps                 | mTLS / SNI policies    |
-| 7  | BIG‑IP + CIS (ClusterIP) – `07-bigip-cis-clusterip/`             | ClusterIP via CIS                   | BIG‑IP CIS               | BIG‑IP            | Optional        | BIG‑IP DNS        | Static routes        | -                   | NetOps                 | Enterprise ADC         |
-| 8  | BIG‑IP + CIS + NGINX OSS IC – `08-bigip-cis-ic-oss/`             | BIG‑IP front → IC                   | NGINX OSS IC             | BIG‑IP / IC       | Optional        | BIG‑IP DNS        | Static / BGP / VXLAN | -                   | DevOps + NetOps        | IC + ADC combo         |
-| 9  | BIG‑IP + CIS + NGINX Plus IC + WAF – `09-bigip-cis-ic-plus-waf/` | BIG‑IP front → NGINX Plus IC + NAP  | NGINX Plus IC + NAP WAF  | BIG‑IP / IC       | Optional        | BIG‑IP DNS + EDNS | Static / BGP / VXLAN | -                   | SecOps + NetOps        | WAF & analytics        |
-| 10 | BIG‑IP IngressLink – `10-bigip-ingresslink/`                     | BIG‑IP owns Ingress                 | BIG‑IP IngressLink       | BIG‑IP            | BIG‑IP          | Optional          | BIG‑IP DNS           | ARP / SNAT / VXLAN  | NetOps                 | Centralised ADC        |
-| 11 | Multi‑Cluster GSLB wrapper – `11-mc-gslb/`                       | BIG‑IP DNS Failover wrapper         | Per‑cluster IC           | BIG‑IP DNS        | BIG‑IP          | Yes               | Authoritative GSLB   | Any (static/BGP)    | NetOps                 | Blue‑green / A‑P       |
-
----
-
-| #  | Scenario & Folder              | External LB / ADC | TLS Term. | Redirect | GSLB | Primary goal |
-|---|--------------------------------|-------------------|-----------|----------|------|--------------|
-| 0 | ClusterIP → `00-clusterip-internal/` | n/a | none | manual | n/a | east‑west / unit tests |
-| 1 | NodePort → `01-nodeport/` | n/a | none | manual | n/a | quick PoC |
-| 2 | ext‑NGINX LB → `02-ext-nginx-nodeport/` | NGINX | external | opt | RR DNS | DIY LB |
-| 3 | Route (edge) → `03-route-edge/` | Router | Router | yes | wildcard DNS | simple PROD |
-| 4 | Route → NGINX OSS IC → `04-route-ic-oss/` | Router | none | n/a | svc IP | path fan‑out |
-| 5 | edge TLS → NGINX OSS IC → `05-route-ic-oss-edgeTLS/` | Router | Router | — | svc | central certs |
-| 6 | passthrough → NGINX OSS IC → `06-route-ic-oss-icTLS/` | Router | IC | — | svc | mTLS / SNI |
-| 7 | BIG‑IP + CIS (ClusterIP) → `07-bigip-cis-clusterip/` | BIG‑IP | BIG‑IP | opt | BIG‑IP DNS | enterprise ADC |
-| 8 | BIG‑IP + CIS + NGINX OSS IC → `08-bigip-cis-ic-oss/` | BIG‑IP | BIG‑IP/IC | opt | BIG‑IP DNS | IC + ADC combo |
-| 9 | BIG‑IP + CIS + NGINX Plus IC + WAF → `09-bigip-cis-ic-plus-waf/` | BIG‑IP | BIG‑IP/IC | opt | GSLB+EDNS | WAF / analytics |
-|10 | BIG‑IP IngressLink → `10-bigip-ingresslink/` | BIG‑IP | BIG‑IP | opt | BIG‑IP DNS | centralised ADC |
-|11 | Multi‑Cluster GSLB wrapper → `11-mc-gslb/` | BIG‑IP DNS | BIG‑IP | yes | auth GSLB | blue‑green |
+| #  | Scenario & Folder                                                | Front‑to‑Back Path                  | In‑Cluster Controller(s) | External LB / ADC | TLS Termination | HTTPS Redirect    | GSLB / Fail‑over     | Connectivity to OCP | Primary Purpose        |
+| -- | ---------------------------------------------------------------- | ----------------------------------- | ------------------------ | ----------------- | --------------- | ----------------- | -------------------- | ------------------- | ---------------------- |
+| 0  | ClusterIP – [`00-clusterip-internal/`](00-clusterip-internal/README.md)                             | Pod → Service (ClusterIP)           | n/a                      | n/a               | None            | Manual            | n/a                  | n/a                 | East‑west / unit tests |
+| 1  | NodePort – [`01-nodeport/`](01-nodeport/README.md)                                        | Pod → Service (NodePort)            | n/a                      | n/a               | None            | Manual            | n/a                  | direct node IP      | Quick PoC              |
+| 2  | ext‑NGINX LB – `02-ext-nginx-nodeport/`                          | NodePort exposed via external NGINX | n/a                      | NGINX             | External NGINX  | Optional          | DNS round‑robin      | n/a                 | DIY LB between workers |
+| 3  | Route (edge) – `03-route-edge/`                                  | HAProxy Router                      | HAProxy Router           | Router            | Router (edge)   | Yes               | Wildcard DNS         | SDN / OVN           | Native PROD pattern    |
+| 4  | Route → NGINX OSS IC – `04-route-ic-oss/`                        | Router → Ingress                    | NGINX OSS IC             | Router            | None (HTTP)     | n/a               | ClusterIP svc        | -                   | Path fan‑out demo      |
+| 5  | Edge TLS → NGINX OSS IC – `05-route-ic-oss-edgeTLS/`             | Router(edge TLS) → IC               | NGINX OSS IC             | Router            | Router (edge)   | Yes               | ClusterIP svc        | -                   | Central cert mgmt & L7 |
+| 6  | Passthrough → NGINX OSS IC – `06-route-ic-oss-icTLS/`            | Router passthrough → IC TLS         | NGINX OSS IC             | Router            | IC              | Optional          | ClusterIP svc        | -                   | mTLS / SNI policies    |
+| 7  | BIG‑IP + CIS (ClusterIP) – `07-bigip-cis-clusterip/`             | ClusterIP via CIS                   | BIG‑IP CIS               | BIG‑IP            | Optional        | BIG‑IP DNS        | Static routes        | -                   | Enterprise ADC         |
+| 8  | BIG‑IP + CIS + NGINX OSS IC – `08-bigip-cis-ic-oss/`             | BIG‑IP front → IC                   | NGINX OSS IC             | BIG‑IP / IC       | Optional        | BIG‑IP DNS        | Static / BGP / VXLAN | -                   | IC + ADC combo         |
+| 9  | BIG‑IP + CIS + NGINX Plus IC + WAF – `09-bigip-cis-ic-plus-waf/` | BIG‑IP front → NGINX Plus IC + NAP  | NGINX Plus IC + NAP WAF  | BIG‑IP / IC       | Optional        | BIG‑IP DNS + EDNS | Static / BGP / VXLAN | -                   | WAF & analytics        |
+| 10 | BIG‑IP IngressLink – `10-bigip-ingresslink/`                     | BIG‑IP owns Ingress                 | BIG‑IP IngressLink       | BIG‑IP            | BIG‑IP          | Optional          | BIG‑IP DNS           | ARP / SNAT / VXLAN  | Centralised ADC        |
+| 11 | Multi‑Cluster GSLB wrapper – `11-mc-gslb/`                       | BIG‑IP DNS Failover wrapper         | Per‑cluster IC           | BIG‑IP DNS        | BIG‑IP          | Yes               | Authoritative GSLB   | Any (static/BGP)    | Blue‑green / A‑P       |
 
 ---
 
