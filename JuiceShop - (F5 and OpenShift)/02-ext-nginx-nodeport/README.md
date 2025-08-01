@@ -44,7 +44,7 @@ Internet → ✈ … →  │ Ubuntu 22.04  │ ────────�
                 └──────────────────────────────────────────────────────────┘
 ```
 
-- **Ubuntu host:** dual‑homed — primary NIC `ens160` → 10.1.10.230/24 (GW 10.1.10.1), secondary `ens192` → 10.1.20.230/24 (optional back‑end network).
+- **Ubuntu host:** with 3 interfaces — primary NIC `ens33` → 10.1.1.230/24 (management network), secondary NIC `ens34` → 10.1.10.230/24 (GW 10.1.10.1), third `ens35` → 10.1.20.230/24 (back‑end network).
 - **OpenShift workers:** 10.1.10.134–136/24.  Control‑plane & Ingress router are **not** used in this scenario.
 
 ---
@@ -59,33 +59,38 @@ Internet → ✈ … →  │ Ubuntu 22.04  │ ────────�
 sudo hostnamectl set-hostname nginx-plus-lb
 
 # 1.2 Configure primary NIC 10.1.10.230/24 with netplan
-sudo tee /etc/netplan/01-ens160.yaml >/dev/null <<'EOF'
+sudo tee /etc/netplan/00-installer-config.yaml >/dev/null <<'EOF'
 network:
-  version: 2
-  renderer: networkd
   ethernets:
-    ens160:
-      dhcp4: no
-      addresses: [10.1.10.230/24]
-      gateway4: 10.1.10.1
+    ens33:
+      addresses:
+      - 10.1.1.230/24
       nameservers:
-        addresses: [8.8.8.8, 1.1.1.1]
-EOF
-
-# 1.3 Optional: secondary NIC 10.1.20.230/24 (isolation between LB & cluster)
-sudo tee /etc/netplan/02-ens192.yaml >/dev/null <<'EOF'
-network:
+        addresses:
+        - 10.1.1.200
+        search: []
+    ens34:
+      addresses:
+      - 10.1.10.230/24
+      nameservers:
+        addresses:
+        - 10.1.10.200
+        search: []
+      routes:
+      - to: default
+        via: 10.1.10.1
+    ens35:
+      addresses:
+      - 10.1.20.230/24
+      nameservers:
+        addresses: []
+        search: []
   version: 2
-  renderer: networkd
-  ethernets:
-    ens192:
-      dhcp4: no
-      addresses: [10.1.20.230/24]
 EOF
 
 sudo netplan apply
-
-# 1.4 Baseline packages & firewall
+#
+# 1.3 Baseline packages & firewall
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y curl jq ufw
 sudo ufw allow ssh       # mgmt
